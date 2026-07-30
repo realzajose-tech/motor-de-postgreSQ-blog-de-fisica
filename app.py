@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import date
@@ -8,11 +8,8 @@ app = Flask(__name__)
 CORS(app)
 
 # --- CONFIGURACIÓN DE LA BASE DE DATOS (SUPABASE / POSTGRESQL) ---
-# Render inyectará la variable de entorno DATABASE_URL automáticamente
-# Si estás en local, usa tu URL de Supabase
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///blog.db')
 
-# Parche importante para que SQLAlchemy funcione con la URL de Supabase (postgres:// -> postgresql://)
 if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
@@ -20,8 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# --- MODELOS DE LA BASE DE DATOS (Basado en tu diagrama) ---
-# (Deja el resto de tus modelos exactamente igual que antes)
+# --- MODELOS DE LA BASE DE DATOS ---
 class Usuario(db.Model):
     __tablename__ = 'usuario'
     id_usuario = db.Column(db.Integer, primary_key=True)
@@ -69,11 +65,24 @@ class Comentario(db.Model):
     fecha = db.Column(db.Date, default=date.today)
     id_publicacion = db.Column(db.Integer, db.ForeignKey('publicacion.id_publicacion'), nullable=False)
 
+# Crear las tablas en la base de datos (si no existen)
+with app.app_context():
+    db.create_all()
+
 # --- RUTAS DEL BACKEND ---
+
+# 1. Servir el index.html DESDE LA RAÍZ (ya no usa templates)
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Esta función lee el archivo index.html que está en la misma carpeta que app.py
+    try:
+        with open('index.html', 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        return html_content
+    except FileNotFoundError:
+        return "Error: No se encontró el archivo 'index.html' en la raíz del proyecto.", 500
 
+# 2. API: Crear Usuario
 @app.route('/api/usuarios', methods=['POST'])
 def crear_usuario():
     data = request.json
@@ -87,6 +96,7 @@ def crear_usuario():
     db.session.commit()
     return jsonify({'mensaje': 'Usuario creado', 'id': nuevo_usuario.id_usuario})
 
+# 3. API: Crear Publicación
 @app.route('/api/publicaciones', methods=['POST'])
 def crear_publicacion():
     data = request.json
@@ -100,6 +110,7 @@ def crear_publicacion():
     db.session.commit()
     return jsonify({'mensaje': 'Publicación creada', 'id': nueva_pub.id_publicacion})
 
+# 4. API: Listar Publicaciones
 @app.route('/api/publicaciones', methods=['GET'])
 def listar_publicaciones():
     publicaciones = Publicacion.query.order_by(Publicacion.fecha_publicacion.desc()).all()
@@ -115,6 +126,5 @@ def listar_publicaciones():
     return jsonify(resultado)
 
 if __name__ == '__main__':
-    # Render usa el puerto 10000 por defecto, o el que indique la variable PORT
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False) # Debug False en producción
+    app.run(host='0.0.0.0', port=port, debug=False)
