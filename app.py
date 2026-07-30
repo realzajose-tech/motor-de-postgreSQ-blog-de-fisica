@@ -1,128 +1,86 @@
 import os
-from flask import Flask, request, jsonify, send_from_directory
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
-from datetime import date
+from flask import Flask, render_template_string, request, jsonify
+from supabase import create_client, Client
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
 
-# --- CONFIGURACIÓN DE LA BASE DE DATOS (SUPABASE / POSTGRESQL) ---
-database_url = os.environ.get('DATABASE_URL', 'sqlite:///blog.db')
+# --- CONEXIÓN A SUPABASE ---
+# Render leerá estas variables desde "Environment Variables"
+SUPABASE_URL = os.environ.get("https://xjdbvtfaekeblhtqcpvs.supabase.co")
+SUPABASE_KEY = os.environ.get("sb_publishable__vEjN-Zb_NQcup-N11IMTQ_g41Jgdi0")   
 
-if database_url.startswith('postgres://'):
-    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+# Crear el cliente de Supabase
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = database_url
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+# --- RUTAS ---
 
-# --- MODELOS DE LA BASE DE DATOS ---
-class Usuario(db.Model):
-    __tablename__ = 'usuario'
-    id_usuario = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    correo = db.Column(db.String(150))
-    contrasena = db.Column(db.String(255), nullable=False)
-    rol = db.Column(db.String(20))
-    fecha_registro = db.Column(db.Date, default=date.today)
-    publicaciones = db.relationship('Publicacion', backref='autor', lazy=True)
-
-class Categoria(db.Model):
-    __tablename__ = 'categoria'
-    id_categoria = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    descripcion = db.Column(db.String(255))
-    publicaciones = db.relationship('Publicacion', backref='categoria', lazy=True)
-
-class Etiqueta(db.Model):
-    __tablename__ = 'etiqueta'
-    id_etiqueta = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(50), nullable=False)
-
-class Publicacion(db.Model):
-    __tablename__ = 'publicacion'
-    id_publicacion = db.Column(db.Integer, primary_key=True)
-    titulo = db.Column(db.String(150), nullable=False)
-    contenido = db.Column(db.Text)
-    imagen_url = db.Column(db.String(255))
-    fecha_publicacion = db.Column(db.Date, default=date.today)
-    estado = db.Column(db.String(20))
-    id_usuario = db.Column(db.Integer, db.ForeignKey('usuario.id_usuario'), nullable=False)
-    id_categoria = db.Column(db.Integer, db.ForeignKey('categoria.id_categoria'))
-    comentarios = db.relationship('Comentario', backref='publicacion', lazy=True)
-
-publicacion_etiqueta = db.Table('publicacion_etiqueta',
-    db.Column('id_publicacion', db.Integer, db.ForeignKey('publicacion.id_publicacion'), primary_key=True),
-    db.Column('id_etiqueta', db.Integer, db.ForeignKey('etiqueta.id_etiqueta'), primary_key=True)
-)
-
-class Comentario(db.Model):
-    __tablename__ = 'comentario'
-    id_comentario = db.Column(db.Integer, primary_key=True)
-    autor = db.Column(db.String(100))
-    contenido = db.Column(db.Text)
-    fecha = db.Column(db.Date, default=date.today)
-    id_publicacion = db.Column(db.Integer, db.ForeignKey('publicacion.id_publicacion'), nullable=False)
-
-# Crear las tablas en la base de datos (si no existen)
-with app.app_context():
-    db.create_all()
-
-# --- RUTAS DEL BACKEND ---
-
-# 1. Servir el index.html DESDE LA RAÍZ (ya no usa templates)
+# 1. Servir el index.html desde la raíz
 @app.route('/')
 def index():
-    # Esta función lee el archivo index.html que está en la misma carpeta que app.py
     try:
         with open('index.html', 'r', encoding='utf-8') as f:
             html_content = f.read()
         return html_content
     except FileNotFoundError:
-        return "Error: No se encontró el archivo 'index.html' en la raíz del proyecto.", 500
+        return "Error: No se encontró el archivo 'index.html' en la raíz.", 500
 
-# 2. API: Crear Usuario
+# 2. API: Crear Usuario (Usando Supabase)
 @app.route('/api/usuarios', methods=['POST'])
 def crear_usuario():
     data = request.json
-    nuevo_usuario = Usuario(
-        nombre=data['nombre'],
-        correo=data.get('correo'),
-        contrasena=data['contrasena'],
-        rol=data.get('rol')
-    )
-    db.session.add(nuevo_usuario)
-    db.session.commit()
-    return jsonify({'mensaje': 'Usuario creado', 'id': nuevo_usuario.id_usuario})
+    # Insertar en la tabla 'usuario' de Supabase
+    response = supabase.table('usuario').insert({
+        'nombre': data['nombre'],
+        'correo': data.get('correo'),
+        'contrasena': data['contrasena'],
+        'rol': data.get('rol')
+    }).execute()
+    
+    # Devolver el ID del nuevo usuario
+    if response.data:
+        return jsonify({'mensaje': 'Usuario creado', 'id': response.data[0]['id_usuario']})
+    else:
+        return jsonify({'error': 'No se pudo crear el usuario'}), 400
 
-# 3. API: Crear Publicación
+# 3. API: Crear Publicación (Usando Supabase)
 @app.route('/api/publicaciones', methods=['POST'])
 def crear_publicacion():
     data = request.json
-    nueva_pub = Publicacion(
-        titulo=data['titulo'],
-        contenido=data.get('contenido'),
-        id_usuario=data['id_usuario'],
-        id_categoria=data.get('id_categoria')
-    )
-    db.session.add(nueva_pub)
-    db.session.commit()
-    return jsonify({'mensaje': 'Publicación creada', 'id': nueva_pub.id_publicacion})
+    response = supabase.table('publicacion').insert({
+        'titulo': data['titulo'],
+        'contenido': data.get('contenido'),
+        'id_usuario': data['id_usuario'],
+        'id_categoria': data.get('id_categoria')
+    }).execute()
+    
+    if response.data:
+        return jsonify({'mensaje': 'Publicación creada', 'id': response.data[0]['id_publicacion']})
+    else:
+        return jsonify({'error': 'No se pudo crear la publicación'}), 400
 
-# 4. API: Listar Publicaciones
+# 4. API: Listar Publicaciones (Con JOIN para traer el nombre del autor)
 @app.route('/api/publicaciones', methods=['GET'])
 def listar_publicaciones():
-    publicaciones = Publicacion.query.order_by(Publicacion.fecha_publicacion.desc()).all()
+    # Hacemos un JOIN entre 'publicacion' y 'usuario' para traer el nombre del autor
+    response = supabase.table('publicacion').select(
+        'id_publicacion, titulo, contenido, fecha_publicacion, usuario(nombre)'
+    ).order('fecha_publicacion', desc=True).execute()
+    
+    # Formatear la respuesta para que el frontend la entienda igual que antes
     resultado = []
-    for pub in publicaciones:
+    for pub in response.data:
         resultado.append({
-            'id_publicacion': pub.id_publicacion,
-            'titulo': pub.titulo,
-            'contenido': pub.contenido,
-            'fecha_publicacion': pub.fecha_publicacion.strftime('%d/%m/%Y'),
-            'autor': pub.autor.nombre if pub.autor else 'Anónimo'
+            'id_publicacion': pub['id_publicacion'],
+            'titulo': pub['titulo'],
+            'contenido': pub['contenido'],
+            'fecha_publicacion': pub['fecha_publicacion'],
+            'autor': pub['usuario']['nombre'] if pub['usuario'] else 'Anónimo'
         })
+    
     return jsonify(resultado)
 
 if __name__ == '__main__':
