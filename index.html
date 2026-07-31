@@ -62,9 +62,14 @@
                     body: JSON.stringify(data)
                 });
                 const json = await res.json();
-                if(json.mensaje) alert('✅ '+json.mensaje+' (ID: '+json.id+')');
-                else alert('❌ Error: '+json.error);
-            } catch(e) { alert('Error de red'); }
+                if(json.mensaje) {
+                    alert('✅ '+json.mensaje+' (ID: '+json.id+')');
+                } else {
+                    alert('❌ Error: '+json.error);
+                }
+            } catch(e) {
+                alert('❌ Error de red: '+e.message);
+            }
         }
 
         async function crearPublicacion() {
@@ -79,9 +84,15 @@
                     body: JSON.stringify(data)
                 });
                 const json = await res.json();
-                if(json.mensaje) { alert('✅ '+json.mensaje+' (ID: '+json.id+')'); cargarPublicaciones(); }
-                else alert('❌ Error: '+json.error);
-            } catch(e) { alert('Error de red'); }
+                if(json.mensaje) {
+                    alert('✅ '+json.mensaje+' (ID: '+json.id+')');
+                    cargarPublicaciones();
+                } else {
+                    alert('❌ Error: '+json.error);
+                }
+            } catch(e) {
+                alert('❌ Error de red: '+e.message);
+            }
         }
 
         async function cargarPublicaciones() {
@@ -94,7 +105,7 @@
                 
                 contenedor.innerHTML = '';
                 if(pubs.length === 0) {
-                    contenedor.innerHTML = '<p style="color:#999;">No hay publicaciones.</p>';
+                    contenedor.innerHTML = '<p style="color:#999;">No hay publicaciones aún. ¡Crea una!</p>';
                     return;
                 }
                 pubs.forEach(p => {
