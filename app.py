@@ -1,4 +1,3 @@
-
 from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
 import os
@@ -66,7 +65,7 @@ def crear_usuario():
         if response.data:
             return jsonify({'error': 'El correo ya está registrado'}), 400
 
-        # Insertar el nuevo usuario (SIN .execute() al final)
+        # Insertar el nuevo usuario
         response = db.table('usuario').insert({
             'nombre': nombre,
             'correo': correo,
@@ -102,7 +101,7 @@ def crear_publicacion():
         return jsonify({'error': 'Error de conexión a la base de datos'}), 500
 
     try:
-        # Insertar la publicación (SIN .execute() al final)
+        # Insertar la publicación
         response = db.table('publicacion').insert({
             'titulo': titulo,
             'contenido': contenido,
