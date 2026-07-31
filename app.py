@@ -1,8 +1,8 @@
+
 from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
 import os
 import sys
-import traceback
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -34,19 +34,11 @@ def serve_archivos(filename):
 
 def get_db():
     if not Database:
-        print("❌ Database no importado")
         return None
     try:
-        db = Database()
-        if db and db.supabase:
-            print("🟡 Conexión obtenida exitosamente")
-            return db
-        else:
-            print("❌ db.supabase es None")
-            return None
+        return Database()
     except Exception as e:
         print(f"❌ Error al crear Database: {e}")
-        traceback.print_exc()
         return None
 
 # ============================================
@@ -66,19 +58,21 @@ def crear_usuario():
 
     db = get_db()
     if not db:
-        return jsonify({'error': 'Error de conexión'}), 500
+        return jsonify({'error': 'Error de conexión a la base de datos'}), 500
 
     try:
+        # Verificar si el correo ya existe
         response = db.table('usuario').select('id_usuario').eq('correo', correo).execute()
         if response.data:
             return jsonify({'error': 'El correo ya está registrado'}), 400
 
+        # Insertar el nuevo usuario (SIN .execute() al final)
         response = db.table('usuario').insert({
             'nombre': nombre,
             'correo': correo,
             'contrasena': contrasena,
             'rol': rol
-        }).execute()
+        })
 
         if response.data:
             return jsonify({'mensaje': 'Usuario creado', 'id': response.data[0]['id_usuario']})
@@ -105,15 +99,16 @@ def crear_publicacion():
 
     db = get_db()
     if not db:
-        return jsonify({'error': 'Error de conexión'}), 500
+        return jsonify({'error': 'Error de conexión a la base de datos'}), 500
 
     try:
+        # Insertar la publicación (SIN .execute() al final)
         response = db.table('publicacion').insert({
             'titulo': titulo,
             'contenido': contenido,
             'id_usuario': id_usuario,
             'id_categoria': id_categoria
-        }).execute()
+        })
 
         if response.data:
             return jsonify({'mensaje': 'Publicación creada', 'id': response.data[0]['id_publicacion']})
@@ -131,7 +126,7 @@ def crear_publicacion():
 def listar_publicaciones():
     db = get_db()
     if not db:
-        return jsonify({'error': 'Error de conexión'}), 500
+        return jsonify({'error': 'Error de conexión a la base de datos'}), 500
 
     try:
         print("🔍 Consultando publicaciones...")
