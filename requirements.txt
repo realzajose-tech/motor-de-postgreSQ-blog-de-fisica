@@ -1,5 +1,4 @@
-flask
+Flask
 flask-cors
-supabase
-python-dotenv
+requests
 gunicorn
