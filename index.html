@@ -3,114 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Blog Flask</title>
+    <title>Mi Blog - Física</title>
     <style>
-        * Estilos generales */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f6f9;
-    margin: 0;
-    padding: 20px;
-    color: #333;
-}
-
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
-}
-
-header {
-    text-align: center;
-    margin-bottom: 30px;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-h1 { margin: 0; color: #2c3e50; }
-h2 { border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-top: 0; font-size: 1.2rem; }
-
-/* Grid de dos columnas */
-.grid-layout {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 30px;
-}
-
-@media (max-width: 768px) {
-    .grid-layout { grid-template-columns: 1fr; }
-}
-
-/* Tarjetas y Formularios */
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    margin-bottom: 20px;
-}
-
-input, textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 14px;
-}
-
-button.btn-primary {
-    width: 100%;
-    padding: 10px;
-    background-color: #1e293b;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s;
-}
-
-button.btn-primary:hover { background-color: #334155; }
-
-/* Lista de publicaciones */
-#contenedor-publicaciones .post-item {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border-left: 4px solid #1e293b;
-}
-
-.post-item h3 { margin: 0 0 5px 0; color: #333; }
-.post-item p { margin: 5px 0; color: #666; line-height: 1.5; }
-.post-item small { color: #999; font-size: 0.85rem; display: block; margin-top: 10px; }
-
-.loading-text { color: #999; text-align: center; font-style: italic; }
+        /* --- ESTILOS CSS --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        h1 { margin: 0; color: #2c3e50; }
+        h2 { border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-top: 0; font-size: 1.2rem; }
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 30px;
+        }
+        @media (max-width: 768px) {
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            background-color: #1e293b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary:hover { background-color: #334155; }
+        #contenedor-publicaciones .post-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #1e293b;
+        }
+        .post-item h3 { margin: 0 0 5px 0; color: #333; }
+        .post-item p { margin: 5px 0; color: #666; line-height: 1.5; }
+        .post-item small { color: #999; font-size: 0.85rem; display: block; margin-top: 10px; }
+        .loading-text { color: #999; text-align: center; font-style: italic; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <header>
-            <h1  Mi Blog - </h1>
-            <p>Blog </p>
+            <h1>📝 Mi Blog - Física</h1>
+            <p>Blog de divulgación científica</p>
         </header>
 
         <div class="grid-layout">
             <!-- COLUMNA IZQUIERDA: Formularios -->
             <div class="form-section">
-               <h2>1. Crear Usuario</h2>
-<div class="card">
-    <input type="text" id="nombre" placeholder="Nombre completo" required>
-    <input type="email" id="correo" placeholder="Correo electrónico" required>
-    <input type="password" id="contrasena" placeholder="Contraseña" required>
-    <input type="text" id="rol" placeholder="Rol (ej: admin)">
-    <button onclick="crearUsuario()" class="btn-primary">Crear Usuario</button>
-</div>
+                <h2>1. Crear Usuario</h2>
+                <div class="card">
+                    <input type="text" id="nombre" placeholder="Nombre completo" required>
+                    <input type="email" id="correo" placeholder="Correo electrónico" required>
+                    <input type="password" id="contrasena" placeholder="Contraseña" required>
+                    <input type="text" id="rol" placeholder="Rol (ej: admin)">
+                    <button onclick="crearUsuario()" class="btn-primary">Crear Usuario</button>
+                </div>
 
                 <h2>2. Crear Publicación</h2>
                 <div class="card">
@@ -123,7 +107,7 @@ button.btn-primary:hover { background-color: #334155; }
 
             <!-- COLUMNA DERECHA: Lista de publicaciones -->
             <div class="list-section">
-                <h2> Últimas Publicaciones</h2>
+                <h2>📰 Últimas Publicaciones</h2>
                 <div id="contenedor-publicaciones">
                     <p class="loading-text">Cargando publicaciones...</p>
                 </div>
@@ -131,114 +115,117 @@ button.btn-primary:hover { background-color: #334155; }
         </div>
     </div>
 
-<script> // URL base de la API en Flask
-const API_URL = 'http://127.0.0.1:5000/api';
+    <script>
+        // --- TU LOGICA JS CORREGIDA ---
+        // La URL debe ser relativa a tu dominio de Render
+        const API_URL = '/api';
 
-// --- FUNCIONALIDAD: CREAR USUARIO ---
-async function crearUsuario() {
-    const nombre = document.getElementById('nombre').value;
-    const correo = document.getElementById('correo').value;
-    const contrasena = document.getElementById('contrasena').value;
-    const rol = document.getElementById('rol').value;
+        // 1. Crear Usuario
+        async function crearUsuario() {
+            const nombre = document.getElementById('nombre').value;
+            const correo = document.getElementById('correo').value;
+            const contrasena = document.getElementById('contrasena').value;
+            const rol = document.getElementById('rol').value;
 
-    if (!nombre || !contrasena) {
-        alert("El nombre y la contraseña son obligatorios");
-        return;
-    }
+            if (!nombre || !correo || !contrasena) {
+                alert("Todos los campos son obligatorios");
+                return;
+            }
 
-    try {
-        const respuesta = await fetch(`${API_URL}/usuarios`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, correo, contrasena, rol })
-        });
-        
-        const datos = await respuesta.json();
-        alert(`✅ ${datos.mensaje} (ID: ${datos.id})`);
-        
-        // Limpiar campos (opcional)
-        document.getElementById('nombre').value = '';
-        document.getElementById('correo').value = '';
-        document.getElementById('contrasena').value = '';
-        document.getElementById('rol').value = '';
-
-    } catch (error) {
-        console.error(error);
-        alert("Error al crear el usuario");
-    }
-}
-
-// --- FUNCIONALIDAD: CREAR PUBLICACIÓN ---
-async function crearPublicacion() {
-    const titulo = document.getElementById('titulo').value;
-    const contenido = document.getElementById('contenido').value;
-    const id_usuario = document.getElementById('id_usuario').value;
-
-    if (!titulo || !id_usuario) {
-        alert("El título y el ID de usuario son obligatorios");
-        return;
-    }
-
-    try {
-        const respuesta = await fetch(`${API_URL}/publicaciones`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ titulo, contenido, id_usuario: parseInt(id_usuario) })
-        });
-
-        const datos = await respuesta.json();
-        alert(`✅ ${datos.mensaje} (ID: ${datos.id})`);
-
-        // Limpiar y recargar la lista
-        document.getElementById('titulo').value = '';
-        document.getElementById('contenido').value = '';
-        document.getElementById('id_usuario').value = '';
-        cargarPublicaciones();
-
-    } catch (error) {
-        console.error(error);
-        alert("Error al crear la publicación");
-    }
-}
-
-// --- FUNCIONALIDAD: CARGAR Y MOSTRAR PUBLICACIONES ---
-async function cargarPublicaciones() {
-    const contenedor = document.getElementById('contenedor-publicaciones');
-    contenedor.innerHTML = '<p class="loading-text">Cargando...</p>';
-
-    try {
-        const respuesta = await fetch(`${API_URL}/publicaciones`);
-        const publicaciones = await respuesta.json();
-
-        contenedor.innerHTML = ''; // Limpiar contenedor
-
-        if (publicaciones.length === 0) {
-            contenedor.innerHTML = '<p style="text-align:center; color:#999;">Aún no hay publicaciones. ¡Crea una!</p>';
-            return;
+            try {
+                const respuesta = await fetch(`${API_URL}/usuarios`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombre, correo, contrasena, rol })
+                });
+                
+                const datos = await respuesta.json();
+                if (datos.id) {
+                    alert(`✅ Usuario creado (ID: ${datos.id})`);
+                } else {
+                    alert(`❌ Error: ${datos.error || 'Error desconocido'}`);
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Error de conexión con el servidor");
+            }
         }
 
-        // Renderizar cada publicación
-        publicaciones.forEach(pub => {
-            const div = document.createElement('div');
-            div.className = 'post-item';
-            div.innerHTML = `
-                <h3>${pub.titulo}</h3>
-                <p>${pub.contenido || 'Sin contenido adicional'}</p>
-                <small>✍️ ${pub.autor} | 📅 ${pub.fecha_publicacion}</small>
-            `;
-            contenedor.appendChild(div);
-        });
+        // 2. Crear Publicación
+        async function crearPublicacion() {
+            const titulo = document.getElementById('titulo').value;
+            const contenido = document.getElementById('contenido').value;
+            const id_usuario = document.getElementById('id_usuario').value;
 
-    } catch (error) {
-        console.error(error);
-        contenedor.innerHTML = '<p style="color:red; text-align:center;">Error al cargar datos.</p>';
-    }
-}
+            if (!titulo || !id_usuario) {
+                alert("El título y el ID de usuario son obligatorios");
+                return;
+            }
 
-// --- EJECUCIÓN AL CARGAR LA PÁGINA ---
-// Cargar las publicaciones automáticamente cuando se abre la página
-document.addEventListener('DOMContentLoaded', () => {
-    cargarPublicaciones();
-});</script>
+            try {
+                const respuesta = await fetch(`${API_URL}/publicaciones`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        titulo, 
+                        contenido, 
+                        id_usuario: parseInt(id_usuario),
+                        id_categoria: 1 // Valor por defecto para prueba
+                    })
+                });
+
+                const datos = await respuesta.json();
+                if (datos.id) {
+                    alert(`✅ Publicación creada (ID: ${datos.id})`);
+                    document.getElementById('titulo').value = '';
+                    document.getElementById('contenido').value = '';
+                    cargarPublicaciones(); // Recargar la lista
+                } else {
+                    alert(`❌ Error: ${datos.error || 'Error desconocido'}`);
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Error de conexión con el servidor");
+            }
+        }
+
+        // 3. Cargar Publicaciones
+        async function cargarPublicaciones() {
+            const contenedor = document.getElementById('contenedor-publicaciones');
+            contenedor.innerHTML = '<p class="loading-text">Cargando...</p>';
+
+            try {
+                const respuesta = await fetch(`${API_URL}/publicaciones`);
+                if (!respuesta.ok) {
+                    throw new Error(`Error HTTP: ${respuesta.status}`);
+                }
+                const publicaciones = await respuesta.json();
+
+                contenedor.innerHTML = '';
+                if (publicaciones.length === 0) {
+                    contenedor.innerHTML = '<p style="text-align:center; color:#999;">Aún no hay publicaciones. ¡Crea una!</p>';
+                    return;
+                }
+
+                publicaciones.forEach(pub => {
+                    const div = document.createElement('div');
+                    div.className = 'post-item';
+                    div.innerHTML = `
+                        <h3>${pub.titulo}</h3>
+                        <p>${pub.contenido || 'Sin contenido adicional'}</p>
+                        <small>✍️ ${pub.autor} | 📅 ${pub.fecha_publicacion}</small>
+                    `;
+                    contenedor.appendChild(div);
+                });
+
+            } catch (error) {
+                console.error(error);
+                contenedor.innerHTML = '<p style="color:red; text-align:center;">Error al cargar los datos. Revisa la consola (F12).</p>';
+            }
+        }
+
+        // Cargar al inicio
+        document.addEventListener('DOMContentLoaded', cargarPublicaciones);
+    </script>
 </body>
 </html>
